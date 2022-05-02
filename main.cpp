@@ -94,24 +94,24 @@ void contarBombas(){
 
 // procedimento para imprimir o jogo
 void imprimir(){
-    cout<<"    ";
+    cout<<endl<<endl<<"\t"<<"    ";
     for(l = 0; l < tam; l++)
         cout<<" "<<l<<"  "; // índices das colunas
-    cout<<endl<<"   -----------------------------------------"<<endl;
+    cout<<endl<<"\t"<<"   -----------------------------------------"<<endl;
     for(l = 0; l < tam; l++){
-        cout<<l<<"  |"; // índices das linhas
+        cout<<"\t"<<l<<"  |"; // índices das linhas
         for(c = 0; c < tam; c++){
             if(jogo[l][c].estaAberta){
                 if(jogo[l][c].eBomba)
                     cout<<" * ";// se for bomba *
                 else
-                    cout<<jogo[l][c].vizinhos; //bombas vizinhas
+                    cout<<" "<<jogo[l][c].vizinhos<< " "; //bombas vizinhas
             }
             else
                 cout<<"   "; // imprime três espaços quando está fechada
             cout<<"|";// barra verticais
         }
-        cout<<endl<<"   -----------------------------------------"<<endl;
+        cout<<endl<<"\t   -----------------------------------------"<<endl;
     }
 }
 
@@ -165,25 +165,83 @@ Dificuldade carregar_Dificuldade(const std::string config_file){
   return level;
 }
 
-void comecarJogo(string n){
-  int x = 0;
-  if (n == "beginner"){
-    tam = 10;
-    x = 10;
-  }
-  else if (n == "intermediary"){
-    tam = 15;
-    x = 40;
 
-  }
 
-  
-  
-  inicializarJogo();
-  sortearBombas(x);
-  contarBombas();
-  imprimir();
+// abrir coordenadas
+void abrirCelula(int l, int c){
+    if(coordenadaEhValida(l, c) == 1 && jogo[l][c].estaAberta == 0){
+      cout<<" ";
+        jogo[l][c].estaAberta = 1;
+        if(jogo[l][c].vizinhos == 0){
+
+            abrirCelula(l-1, c);
+            abrirCelula(l+1, c);
+            abrirCelula(l, c+1);
+            abrirCelula(l, c-1);
+        }
+    }
 }
+
+
+
+
+//verificar vitoria n > 0 ainda n ganhou, n = 0 ganhou
+int ganhou(){
+    int quantidade = 0;
+
+    for(l = 0; l < tam; l++){
+        for(c = 0; c < tam; c++){
+            if(jogo[l][c].estaAberta == 0 && jogo[l][c].eBomba == 0)
+                quantidade++;
+        }
+    }
+    return quantidade;
+}
+
+
+
+// ler coordenadas
+void jogar(){
+    int linha, coluna;
+
+    do{
+        imprimir();
+        do{
+            cout<<endl<<"Digite as coordenadas de linha e coluna:";
+            cin>>linha>>coluna;
+
+            if(coordenadaEhValida(linha, coluna) == 0 || jogo[linha][coluna].estaAberta == 1)
+                cout<<"Coordenada invalida ou ja aberta!";
+        }while(coordenadaEhValida(linha, coluna) == 0 || jogo[linha][coluna].estaAberta == 1);
+
+        abrirCelula(linha, coluna);
+    }while(ganhou() != 0 && jogo[linha][coluna].eBomba == 0);
+
+    if(jogo[linha][coluna].eBomba == 1)
+        cout<<endl<<"tQue pena! Voce perdeu!!!"<<endl;
+    else
+        cout<<endl<<"PARABENS! VOCE GANHOU!!!"<<endl;
+
+    imprimir();
+}
+
+
+void comecarJogo(){
+
+
+
+
+  inicializarJogo();
+  sortearBombas(10);
+  contarBombas();
+
+  jogar();
+
+
+
+
+}
+
 
 int main(int argc, char ** argv){
 
@@ -215,7 +273,7 @@ int main(int argc, char ** argv){
     }
   } else {
     Dificuldade level = carregar_Dificuldade(CONFIG_FILE);
-      comecarJogo(level);
+      comecarJogo();
   }
   return 0;
 }
