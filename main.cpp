@@ -13,22 +13,47 @@ const std::string CONFIG_FILE = "config.cfg";
 
 
 
-
-
-
 typedef struct{
     int eBomba;
     int estaAberta;
     int vizinhos;
 }celula;
 
+//função para criar o mapa de acordo com a dificuldade
+
+void mapa (Dificuldade ){
+
+  if (Dificuldade == b){
+    l = 10;
+    c = 10;
+    qtd_bombas = 10;
+  }
+  else if (Dificuldade == i) {
+    l = 15;
+    c = 15;
+    qtd_bombas = 40; 
+  }
+  else if (Dificuldade == a){
+    l = 15;
+    c = 30;
+    qtd_bombas = 100;
+  } else (Dificuldade == b)
+
+
+}
+
+
+
+
 // variáveis globais//
 celula jogo[10][10];
 int l, c, tam = 10;
 
-// procedimento para inicializar a matriz do jogo
-void inicializarJogo(){
-    for(l = 0; l < tam; l++){
+
+
+// procedimento para inicializar a matriz do jogo em modo easy
+void inicializarJogoFacil(){
+    for(l = 0; l < tam1; l++){
         for(c = 0; c < tam; c++){
             jogo[l][c].eBomba = 0;
             jogo[l][c].estaAberta = 0;
@@ -36,6 +61,29 @@ void inicializarJogo(){
         }
     }
 }
+
+// procedimento para inicializar a matriz do jogo em modo medium
+/*void inicializarJogoMedio(){
+    for(l = 0; l < tam2; l++){
+        for(c = 0; c < tam; c++){
+            jogo[l][c].eBomba = 0;
+            jogo[l][c].estaAberta = 0;
+            jogo[l][c].vizinhos = 0;
+        }
+    }
+}*/
+
+
+// procedimento para inicializar a matriz do jogo em modo hard
+/*void inicializarJogoDificil(){
+    for(l = 0; l < tam3; l++){
+        for(c = 0; c < tam; c++){
+            jogo[l][c].eBomba = 0;
+            jogo[l][c].estaAberta = 0;
+            jogo[l][c].vizinhos = 0;
+        }
+    }
+}*/
 
 // procedimento para sortear n bombas
 void sortearBombas(int x){
