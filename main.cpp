@@ -1,38 +1,9 @@
-#include <array>
-#include <cstdlib>
-#include <ctime>
-#include <fstream>
-#include <iostream>
-// #include <map>
-
 #include "Game.h"
 
-using namespace std;
 
 const std::string CONFIG_FILE = "config.cfg";
 
-typedef struct {
-  int eBomba;
-  int estaAberta;
-  int vizinhos;
-} celula;
 
-/*
-// variáveis globais//
-celula jogo[10][10];
-int l, c, tam = 10;
-
-// procedimento para inicializar a matriz do jogo
-void inicializarJogo(){
-    for(l = 0; l < tam; l++){
-        for(c = 0; c < tam; c++){
-            jogo[l][c].eBomba = 0;
-            jogo[l][c].estaAberta = 0;
-            jogo[l][c].vizinhos = 0;
-        }
-    }
-}
-*/
 
 jogo InicializarJogo(Dificuldade level) {
   jogo jogo;
@@ -119,34 +90,41 @@ void contarBombas(jogo &jogo) {
   }
 }
 
+bool verifica_bomba(jogo &jogo, int l, int c) {
+  if (jogo.mapa[l][c] == '@') {
+    return true;
+  }
+  return false;
+}
+
 // procedimento para imprimir o jogo
 void imprimir(jogo &jogo) {
-  cout << endl
-       << endl
+  std::cout << std::endl
+       << std::endl
        << "\t"
        << "    ";
   for (int l = 0; l < jogo.quantidade.linhas; l++)
-    cout << " " << l << "  "; // índices das colunas
-  cout << endl
+    std::cout << " " << l << "  "; // índices das colunas
+  std::cout << std::endl
        << "\t"
-       << "   -----------------------------------------" << endl;
+       << "   -----------------------------------------" << std::endl;
   for (int l = 0; l < jogo.quantidade.linhas; l++) {
-    cout << "\t" << l << "  |"; // índices das linhas
+    std::cout << "\t" << l << "  |"; // índices das linhas
     for (int c = 0; c < jogo.quantidade.colunas; c++) {
-      if (jogo.mapa[l][c]) {
+      if (verifica_bomba(jogo, l, c)) {
         if (jogo.mapa[l][c])
-          cout << " * "; // se for bomba *
+          std::cout << " @ "; // se for bomba *
         else
-          cout << " " << jogo.mapa[l][c]<< " "; // bombas vizinhas
+          std::cout << " " << jogo.mapa[l][c]<< " "; // bombas vizinhas
       } else
-        cout << "   "; // imprime três espaços quando está fechada
-      cout << "|";     // barra verticais
+        std::cout << "   "; // imprime três espaços quando está fechada
+      std::cout << "|";     // barra verticais
     }
-    cout << endl << "\t   -----------------------------------------" << endl;
+    std::cout << std::endl << "\t   -----------------------------------------" << std::endl;
   }
 }
 
-void mostrar_instrucoes(void) {
+void mostrar_instrucoes() {
   std::cout << "Instruções Campo Minado" << std::endl;
   std::cout << "Opções:" << std::endl;
   std::cout << "-h ou --help" << std::endl;
@@ -207,7 +185,7 @@ Dificuldade carregar_Dificuldade(const std::string config_file) {
 // abrir coordenadas
 void abrirCelula(jogo &jogo, int l, int c) {
   if (coordenadaEhValida(jogo, l, c) && jogo.mapa[l][c] == false) {
-    cout << " ";
+    std::cout << " ";
     jogo.mapa[l][c] = 1;
     if (jogo.mapa[l][c] == 0) {
 
@@ -235,34 +213,34 @@ int ganhou(jogo &jogo) {
 // ler coordenadas
 void jogar(jogo &jogo) {
   int l, c;
-
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  start = std::chrono::system_clock::now();
   do {
     imprimir(jogo);
     do {
-      cout << endl << "Digite as coordenadas de linha e coluna:";
-      cin >> l >> c;
-
+      std::cout << std::endl << "Digite as coordenadas de linha e coluna:";
+      std::cin >> l >> c;
       if (coordenadaEhValida(jogo, l, c) == 0 ||
           jogo.mapa[l][c] == 1)
-        cout << "Coordenada invalida ou ja aberta!";
+        std::cout << "Coordenada invalida ou ja aberta!";
     } while (coordenadaEhValida(jogo, l, c) == 0 ||
              jogo.mapa[l][c] == 1);
 
     abrirCelula(jogo, l, c);
-  } while (ganhou(jogo) != 0 && jogo.mapa[l][c] == 0);
+  } while (ganhou != 0);
 
-  if (jogo.mapa[l][c] == 1)
-    cout << endl << "tQue pena! Voce perdeu!!!" << endl;
+  if (verifica_bomba(jogo,l,c))
+    std::cout << std::endl << "Que pena! Voce perdeu!!!" << std::endl;
   else
-    cout << endl << "PARABENS! VOCE GANHOU!!!" << endl;
-
+    std::cout << std::endl << "PARABENS! VOCE GANHOU!!!" << std::endl;
+    end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "DURACAO DA PARTIDA: "<< elapsed_seconds.count() << "s\n";
   imprimir(jogo);
 }
 
 void comecarJogo(Dificuldade level) {
-  jogo jogo;
-  
-  InicializarJogo(level);
+  jogo jogo = InicializarJogo(level);
   sortearBombas(jogo);
   contarBombas(jogo);
 
